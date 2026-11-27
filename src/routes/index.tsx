@@ -1,23 +1,19 @@
-import { createFileRoute } from "@tanstack/react-router";
-
-// The home route ships no og:image, so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
-export const Route = createFileRoute("/")({
-  component: Index,
-});
-
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { PublicShell } from '@/components/bridgeup/public-shell';
+import { OpportunityCard, MentorCard } from '@/components/bridgeup/cards';
+import { Button } from '@/components/ui/button';
+import { catalogOptions } from '@/lib/career-queries';
+import { pageHead } from '@/lib/metadata';
+import hero from '@/assets/bridgeup-careers.asset.json';
+export const Route = createFileRoute('/')({ head: () => pageHead('Your Skills Deserve an Opportunity','BridgeUp connects talented people with mentors, structured work experience, and employers who value skills over referrals.'), loader: ({context}) => context.queryClient.ensureQueryData(catalogOptions), component: Index });
+function Index(){ const {data}=useSuspenseQuery(catalogOptions); return <PublicShell>
+<section className="hero"><img className="hero-photo" src={hero.url} alt="Mentor and job seekers collaborating"/><div className="hero-overlay"/><div className="container-wide hero-inner"><div className="hero-copy animate-enter"><span className="eyebrow"><span className="eyebrow-dot"/>Mentorship · Experience · Employment</span><h1>Your skills deserve an <em>opportunity.</em></h1><p className="hero-description">BridgeUp connects talented people with mentors, structured work experience, and employers who value skills over referrals.</p><div className="hero-buttons"><Button asChild size="lg"><Link to="/opportunities">Find Opportunities</Link></Button><Button asChild size="lg" variant="outline"><Link to="/register">Become a Mentor</Link></Button><Button asChild size="lg" variant="secondary"><Link to="/register">Hire Talent</Link></Button></div></div></div></section>
+<section className="section container-wide"><h2>The experience gap</h2><p className="section-intro">Talented graduates, career changers, and returning professionals are often turned away for lacking local experience or referrals. BridgeUp replaces referrals with mentorship, real projects, and skills-based matching.</p></section>
+<section className="section section-muted"><div className="container-wide"><h2>How BridgeUp works</h2><div className="steps-grid"><div className="step"><h3>1. Build your profile</h3><p>Showcase skills, projects, and goals.</p></div><div className="step"><h3>2. Connect with a mentor</h3><p>Get guidance from experienced professionals.</p></div><div className="step"><h3>3. Get matched</h3><p>Apply to opportunities ranked by skills match.</p></div></div></div></section>
+<section className="section container-wide"><div className="section-head"><h2>Featured opportunities</h2><Link to="/opportunities">View all</Link></div><div className="cards-grid">{data.opportunities.slice(0,3).map((o,i)=><OpportunityCard key={o.id} opportunity={o} index={i}/>)}</div></section>
+<section className="section section-muted"><div className="container-wide"><div className="section-head"><h2>Featured mentors</h2><Link to="/mentors">View all</Link></div><div className="cards-grid">{data.mentors.slice(0,3).map(m=><MentorCard key={m.id} mentor={m}/>)}</div></div></section>
+<section className="impact-band"><div className="container-wide impact-inner"><div><h2>Our impact and the SDGs</h2><p>BridgeUp advances decent work, reduced inequality, and partnerships for the goals.</p></div><div className="sdgs"><div className="sdg"><b>8</b><span>Decent Work</span></div><div className="sdg"><b>10</b><span>Reduced Inequalities</span></div><div className="sdg"><b>17</b><span>Partnerships</span></div></div></div></section>
+<section className="section container-wide"><span className="sample-label">Sample testimonial</span><p className="quote">“My mentor helped me reshape my portfolio, and within two months I joined a fellowship.” — Sample job seeker</p></section>
+<section className="cta-band"><div className="container-wide cta-inner"><div><h2>Ready to take the next step?</h2><p>Join BridgeUp today.</p></div><Button asChild size="lg"><Link to="/register">Get Started</Link></Button></div></section>
+</PublicShell>; }
